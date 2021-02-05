@@ -7,5 +7,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:D:\python study\douban\test\test.db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="movie.db" uuid="22333126-e4de-42cf-b368-181095cc5458">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\python study\douban\movie.db</jdbc-url>
+    </data-source>
   </component>
 </project>

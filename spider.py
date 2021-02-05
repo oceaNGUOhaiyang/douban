@@ -93,35 +93,65 @@ def getData(baseUrl):
             data.append(bd.strip())  # 去掉前后空格
 
             dataList.append(data)  # 将处理好的一部电影放入dataList
-    print(dataList)
     return dataList
 
 
 # 保存数据
-def saveData(dataList, savePath):
-    print("save,,")
-    book = xlwt.Workbook(encoding="utf-8", style_compression=0)  # 创建workbook对象
-    sheet = book.add_sheet("豆瓣电影Top250", cell_overwrite_ok=True)  # 创建工作表
-    col = ("电影详情链接", "图片连接", "影片名", "影片别名", "评分", "评价人数", "电影概况", "相关信息")
-    for i in range(0, 8):
-        sheet.write(0, i, col[i])
-    for i in range(0, 250):
-        print("第%d条" % (i + 1))
-        data = dataList[i]
-        for j in range(0, 8):
-            sheet.write(i + 1, j, data[j])
-    book.save(savePath)
+# def saveData(dataList, savePath):
+#     print("save,,")
+#     book = xlwt.Workbook(encoding="utf-8", style_compression=0)  # 创建workbook对象
+#     sheet = book.add_sheet("豆瓣电影Top250", cell_overwrite_ok=True)  # 创建工作表
+#     col = ("电影详情链接", "图片连接", "影片名", "影片别名", "评分", "评价人数", "电影概况", "相关信息")
+#     for i in range(0, 8):
+#         sheet.write(0, i, col[i])
+#     for i in range(0, 250):
+#         print("第%d条" % (i + 1))
+#         data = dataList[i]
+#         for j in range(0, 8):
+#             sheet.write(i + 1, j, data[j])
+#     book.save(savePath)
 
 
-def saveData2DB(dataList, savePath):
-    print("...")
+def saveData2DB(dataList, dbPath):
+    init_db(dbPath)
+    conn = sqlite3.connect(dbPath)
+    cur = conn.cursor()
+
+    for data in dataList:
+        for index in range(len(data)):
+            data[index] = '"' + str(data[index]) + '"'
+        sql = '''
+        insert into movie250(
+        info_link, pic_link, cname, ename, score, rated, introduction, info
+        ) 
+        values (%s)''' % ",".join(data)  # (",".join(data))将data中的值以","连接起来
+        cur.execute(sql)
+        conn.commit()
+    cur.close()
+    conn.close()
 
 
 def init_db(dbPath):
     # 创建数据表
+    sql = '''
+    create table movie250
+    (
+    id integer primary key autoincrement,
+    info_link text,
+    pic_link text,
+    cname varchar ,
+    ename varchar ,
+    score numeric ,
+    rated numeric ,
+    introduction text,
+    info text  
+    )
+    '''
     conn = sqlite3.connect(dbPath)
-    cursor = conn.cursor()
-
+    cursor = conn.cursor()  # Cursor 是每行的集合
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
 
 
 def askURL(url):
@@ -144,4 +174,5 @@ def askURL(url):
 
 
 if __name__ == '__main__':  # 当程序执行时，调用函数,协调函数执行组织的流程(相当于主函数)
+    # init_db("movieTest.db")
     main()
